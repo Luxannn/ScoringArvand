@@ -7,7 +7,7 @@ import numpy as np
 pickle_in = open("Arvand_Gradient_Boosting_Scaled.pkl", "rb")
 model = pickle.load(pickle_in)
 
-df = pd.read_csv('C:\\Users\\saido\\OneDrive\\Рабочий стол\\arvand.csv')
+df = pd.read_csv('arvand.csv')
 
 st.title("Кредитный Скоринг")
 
