@@ -99,11 +99,22 @@ if st.button("Предсказать"):
         st.success("✅ Можно выдать кредит.")
     else:
         st.error("❌ Отказать в выдаче кредита.")
-        requested_loan_amount = input_data['Сумма кредита'] 
-        suggested_amount = 0.8 * requested_loan_amount.iloc[0]
+        low = 0
+        high = df['Сумма кредита'].max()  
+        mid = 0
+        #Использую бинарный поиск для нахождения оптимальной суммы кредита
+        while low <= high:
+            mid = (low + high) // 2
+            df_copy = df.copy()  
+            df_copy['Сумма кредита'] = mid  
+
+            if model.predict(df_copy)[0] == 0:
+                low = mid + 1 
+            else:
+                high = mid - 1
+        suggested_amount = high
         st.subheader("Предложенная сумма кредита:")
         st.write(f"{suggested_amount:.2f} сомони.")
-
 
     st.subheader("Вероятность возврата кредита:")
     st.write(f"{probability[0]*100:.2f}%")
