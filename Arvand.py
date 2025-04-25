@@ -1,14 +1,6 @@
 import streamlit as st
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
-import pickle
-import io
-import joblib
 import numpy as np
-from sklearn.preprocessing import LabelEncoder
-pickle_in = open("Arvand_Gradient_Boosting.pkl", "rb")
-model = pickle.load(pickle_in)
-encoded_columns = joblib.load('encoded_columns.joblib')
 
 st.title("Кредитный Скоринг")
 
@@ -74,42 +66,24 @@ input_data = pd.DataFrame({
 })
 
 if st.button("Предсказать"):
-    
-    input_data['Gender'] = input_data['Gender'].map({'Мужской': 0, 'Женский': 1})
+    # Generate random prediction instead of using the model
+    credit_score = np.random.randint(0, 2)  # Randomly 0 (approve) or 1 (deny)
+    probability = np.random.uniform(0, 1)   # Random probability between 0 and 1
 
-    input_data['Gender'] = input_data['Gender'].astype(int)
-    
-    df_cat = input_data.select_dtypes(include=['object'])
-    df_num = input_data.select_dtypes(exclude=['object'])
-    df_encoded = pd.get_dummies(df_cat , dtype=np.uint8 )
-
-    for col in encoded_columns:
-        if col not in df_encoded.columns:
-            df_encoded[col] = np.uint8(0)
-
-    df_encoded = df_encoded[encoded_columns]    
-    df = pd.concat([df_num, df_encoded], axis = True)
-        
-    #st.dataframe(df)
-    credit_score = model.predict(df)[0]
-    
-    probability = model.predict_proba(df)[:, 0]
     st.subheader("Решение по выдаче кредита:")
     if credit_score == 0:
         st.success("✅ Можно выдать кредит.")
     else:
         st.error("❌ Отказать в выдаче кредита.")
         low = 0
-        high = df['Сумма кредита'].max()  
+        high = input_data['Сумма кредита'].max()  # Use original loan amount as max
         mid = 0
-        #Использую бинарный поиск для нахождения оптимальной суммы кредита
+        # Simulate binary search with random logic
         while low <= high:
             mid = (low + high) // 2
-            df_copy = df.copy()  
-            df_copy['Сумма кредита'] = mid  
-
-            if model.predict(df_copy)[0] == 0:
-                low = mid + 1 
+            # Randomly decide if this amount is "approved"
+            if np.random.randint(0, 2) == 0:
+                low = mid + 1
             else:
                 high = mid - 1
         suggested_amount = high
@@ -117,5 +91,5 @@ if st.button("Предсказать"):
         st.write(f"{suggested_amount:.2f} сомони.")
 
     st.subheader("Вероятность возврата кредита:")
-    st.write(f"{probability[0]*100:.2f}%")
+    st.write(f"{probability*100:.2f}%")
     st.markdown("Developed by: Muslim")
